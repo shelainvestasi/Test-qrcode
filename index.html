@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Generator v3</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+    textarea { width: 90%; max-width: 400px; height: 100px; margin-bottom: 10px; }
+    button { margin: 5px; padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    #qrcode { margin: 20px auto; }
+  </style>
+</head>
+<body>
+  <h2>QR Code Generator dengan Logo</h2>
+  <textarea id="qrText" placeholder="Tulis pesan atau link di sini..."></textarea><br>
+  <button onclick="generateQR()">Generate QR</button>
+  <div id="qrcode"></div>
+  <a id="downloadBtn" style="display:none;" download="qrcode.png">
+    <button>Download QR</button>
+  </a>
+
+  <script>
+    function generateQR() {
+      let qrContainer = document.getElementById("qrcode");
+      qrContainer.innerHTML = "";
+
+      let qrText = document.getElementById("qrText").value.trim();
+      if (!qrText) {
+        alert("Isi teks atau link terlebih dahulu!");
+        return;
+      }
+
+      // buat QR di canvas
+      let qr = new QRCode(qrContainer, {
+        text: qrText,
+        width: 300,
+        height: 300,
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      setTimeout(() => {
+        let qrCanvas = qrContainer.querySelector("canvas");
+        if (!qrCanvas) {
+          alert("QR gagal dibuat!");
+          return;
+        }
+
+        let ctx = qrCanvas.getContext("2d");
+        let logo = new Image();
+        logo.src = "ESDM logo.png"; // pastikan file ada di folder yang sama
+        logo.onload = function () {
+          let logoSize = qrCanvas.width * 0.25;
+          let x = (qrCanvas.width - logoSize) / 2;
+          let y = (qrCanvas.height - logoSize) / 2;
+          ctx.drawImage(logo, x, y, logoSize, logoSize);
+
+          // buat tombol download aktif
+          let downloadBtn = document.getElementById("downloadBtn");
+          downloadBtn.href = qrCanvas.toDataURL("image/png");
+          downloadBtn.style.display = "inline-block";
+        };
+      }, 300);
+    }
+  </script>
+</body>
+</html>
